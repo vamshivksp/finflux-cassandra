@@ -1,0 +1,99 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+     dependencies {
+     classpath 'net.ltgt.gradle:gradle-apt-plugin:0.21'
+               
+  }
+}
+
+plugins {
+    id("org.nosphere.apache.rat") version "0.3.1"
+}
+
+group 'com.finflux'
+version '0.1.0'
+
+ext.versions = [
+        springcontext : '5.1.8.RELEASE',
+        springboot    : '1.5.21.RELEASE',
+        findbugs      : '3.0.1',
+        frameworklang : '0.1.0-BUILD-SNAPSHOT',
+	cassandraVersion : '4.1.0',
+	lombokVersion : '1.18.2'
+]
+
+apply plugin: 'java'
+apply plugin: 'idea' 
+apply plugin: 'eclipse'
+apply plugin: "net.ltgt.apt-eclipse"
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    jcenter()
+    mavenLocal()
+}
+
+dependencies {
+    compile(
+            [group: 'org.springframework', name: 'spring-context', version: versions.springcontext],
+            [group: 'com.google.code.findbugs', name: 'jsr305', version: versions.findbugs],
+            [group: 'com.datastax.oss', name: 'java-driver-core', version: versions.cassandraVersion],
+            [group: 'com.datastax.oss', name: 'java-driver-mapper-runtime', version: versions.cassandraVersion],
+	    	[group: 'com.datastax.oss', name: 'java-driver-query-builder', version: versions.cassandraVersion],
+	    	[group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3']
+    )
+    
+     compileOnly(
+     	[group: 'org.projectlombok', name: 'lombok', version: versions.lombokVersion]
+     )
+    
+    annotationProcessor(
+    		[group: 'org.projectlombok', name: 'lombok', version: versions.lombokVersion],
+    		[group: 'com.datastax.oss', name: 'java-driver-mapper-processor', version: versions.cassandraVersion]
+    )
+    
+   
+
+    testCompile(
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springboot]
+    )
+}
+
+
+publishing {
+    publications {
+        cassandraPublication(MavenPublication) {
+            from components.java
+            groupId project.group
+            artifactId project.name
+            version project.version
+        }
+    }
+}
+
+jar {
+    from sourceSets.main.allSource
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+rat {
+    // List of exclude directives, defaults to ['**/.gradle/**']
+    excludes = [
+            ".idea/**",
+            ".gradle/**",
+            "gradle/**",
+            "build/**",
+            "gradlew",
+            "gradlew.bat",
+            "README.md"
+    ]
+}
