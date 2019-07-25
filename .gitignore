@@ -2,6 +2,13 @@
 .idea
 build/
 target/
+bin/
+.settings/
+.eclipse
+.classpath
+.factorypath
+.project
+
 
 # Ignore Gradle GUI config
 gradle-app.setting
