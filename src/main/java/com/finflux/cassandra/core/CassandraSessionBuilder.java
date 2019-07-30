@@ -1,5 +1,7 @@
 package com.finflux.cassandra.core;
 
+import java.time.Duration;
+
 import javax.annotation.Nonnull;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
@@ -24,10 +26,24 @@ public interface CassandraSessionBuilder {
         driverConfigLoaderBuilder.withString(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, cassandraConnectionData.getPassword());
         driverConfigLoaderBuilder.withInt(DefaultDriverOption.CONNECTION_POOL_LOCAL_SIZE, cassandraConnectionData.getLocalPoolSize());
         driverConfigLoaderBuilder.withInt(DefaultDriverOption.CONNECTION_POOL_REMOTE_SIZE, cassandraConnectionData.getRemotePoolSize());
+        driverConfigLoaderBuilder.withDuration(DefaultDriverOption.REQUEST_TIMEOUT,
+                Duration.ofSeconds(cassandraConnectionData.getRequestTimeOut()));
+        driverConfigLoaderBuilder.withDuration(DefaultDriverOption.CONNECTION_INIT_QUERY_TIMEOUT,
+                Duration.ofSeconds(cassandraConnectionData.getRequestTimeOut()));
+        driverConfigLoaderBuilder.withDuration(DefaultDriverOption.CONNECTION_SET_KEYSPACE_TIMEOUT,
+                Duration.ofSeconds(cassandraConnectionData.getRequestTimeOut()));
+        driverConfigLoaderBuilder.withDuration(DefaultDriverOption.METADATA_SCHEMA_REQUEST_TIMEOUT,
+                Duration.ofSeconds(cassandraConnectionData.getRequestTimeOut()));
+        driverConfigLoaderBuilder.withDuration(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT,
+                Duration.ofSeconds(cassandraConnectionData.getRequestTimeOut()));
+        driverConfigLoaderBuilder.withDuration(DefaultDriverOption.CONTROL_CONNECTION_AGREEMENT_TIMEOUT,
+                Duration.ofSeconds(cassandraConnectionData.getRequestTimeOut()));
+        driverConfigLoaderBuilder.withDuration(DefaultDriverOption.REPREPARE_TIMEOUT,
+                Duration.ofSeconds(cassandraConnectionData.getRequestTimeOut()));
         final DriverConfigLoader driverConfigLoader = driverConfigLoaderBuilder.build();
         return driverConfigLoader;
     }
-    
+
     default CqlSession buildSession(final CassandraConnectionData cassandraConnectionData) {
         final CqlSessionBuilder builder = getSessionBuilder(cassandraConnectionData);
         builder.withKeyspace(CqlIdentifier.fromInternal(cassandraConnectionData.getKeySpaceIdentifier()));
@@ -48,7 +64,7 @@ public interface CassandraSessionBuilder {
         final CqlSessionBuilder builder = getSessionBuilder(cassandraConnectionData);
         return builder.build();
     }
-    
+
     default void createKeySpace(final CassandraConnectionData cassandraConnectionData, final CqlSession session) {
         final CreateKeyspaceStart createKeyspaceStart = SchemaBuilder
                 .createKeyspace(CqlIdentifier.fromInternal(cassandraConnectionData.getKeySpaceIdentifier())).ifNotExists();

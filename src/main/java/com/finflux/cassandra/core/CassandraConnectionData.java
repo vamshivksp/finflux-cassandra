@@ -32,5 +32,7 @@ public class CassandraConnectionData {
     private Integer localPoolSize = 1;
     @Default
     private Integer remotePoolSize = 1;
+    @Default
+    private Integer requestTimeOut = 2;
 
 }
