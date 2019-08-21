@@ -2,6 +2,9 @@
 
 This project provides helps for using Cassandra in services.
 
+## Build command
+./gradlew clean build publishToMavenLocal
+
 ## Prerequisites
 ### Runtime
 Install Java 8 as described at https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html.
