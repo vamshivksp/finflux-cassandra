@@ -78,6 +78,7 @@ public class CassandraJourney {
         try {
             this.session.execute(SchemaBuilder.createTable(CqlIdentifier.fromInternal(this.schemaTableName)).ifNotExists()
                     .withPartitionKey("version", DataTypes.TEXT).withColumn("hash_value", DataTypes.INT).build());
+            Thread.sleep(5000);
         } catch (final Throwable th) {
             this.logger.warn("Schema table for '{}' already exists.", this.schemaTableName);
         }

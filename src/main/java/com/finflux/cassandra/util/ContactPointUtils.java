@@ -34,7 +34,7 @@ public class ContactPointUtils {
       if (contactPoint.contains(":")) {
         final String[] address = contactPoint.split(":");
         clusterBuilder.addContactPoint(
-            new InetSocketAddress(address[0].trim(), Integer.valueOf(address[1].trim())));
+            new InetSocketAddress("cassandra.ap-south-1.amazonaws.com", 9142));
       }
     }
   }
