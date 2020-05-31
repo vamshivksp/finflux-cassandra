@@ -1,5 +1,7 @@
 package com.finflux.cassandra.core;
 
+import java.security.NoSuchAlgorithmException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +12,7 @@ public class CassandraSessionWithoutKeySpace implements CassandraSessionBuilder 
     private final Logger logger = LoggerFactory.getLogger(CassandraSessionWithoutKeySpace.class);
 
     @Override
-    public CqlSession createSession(final CassandraConnectionData cassandraConnectionData) {
+    public CqlSession createSession(final CassandraConnectionData cassandraConnectionData) throws NoSuchAlgorithmException {
 
         final CqlSession session = buildSessionWithoutKeySpace(cassandraConnectionData);
         createKeySpace(cassandraConnectionData, session);

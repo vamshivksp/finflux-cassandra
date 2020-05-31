@@ -34,6 +34,7 @@ import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.servererrors.InvalidQueryException;
 import com.datastax.oss.driver.api.core.type.DataTypes;
 import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
 import com.datastax.oss.driver.api.querybuilder.insert.RegularInsert;
@@ -57,6 +58,11 @@ public class CassandraJourney {
         // check for version
         final Select query = selectFrom(this.schemaTableName).column("hash_value").whereColumn("version").isEqualTo(bindMarker());
         final PreparedStatement preparedSelect = this.session.prepare(query.build());
+        try {
+            final ResultSet resultSet = this.session.execute(preparedSelect.bind(cassandraJourneyRoute.getVersion()));
+        } catch (InvalidQueryException e) {
+            // TODO: handle exception
+        }
         final ResultSet resultSet = this.session.execute(preparedSelect.bind(cassandraJourneyRoute.getVersion()));
         final Row row = resultSet.one();
         if (Objects.nonNull(row)) {
@@ -78,7 +84,6 @@ public class CassandraJourney {
         try {
             this.session.execute(SchemaBuilder.createTable(CqlIdentifier.fromInternal(this.schemaTableName)).ifNotExists()
                     .withPartitionKey("version", DataTypes.TEXT).withColumn("hash_value", DataTypes.INT).build());
-            Thread.sleep(5000);
         } catch (final Throwable th) {
             this.logger.warn("Schema table for '{}' already exists.", this.schemaTableName);
         }

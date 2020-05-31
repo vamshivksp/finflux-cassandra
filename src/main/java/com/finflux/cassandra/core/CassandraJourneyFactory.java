@@ -18,6 +18,8 @@
  */
 package com.finflux.cassandra.core;
 
+import java.security.NoSuchAlgorithmException;
+
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
@@ -31,7 +33,7 @@ public class CassandraJourneyFactory {
     }
 
     public CassandraJourney create(@Nonnull final CassandraSessionProvider cassandraSessionProvider,
-            @Nonnull final CassandraConnectionData cassandraConnectionData) {
+            @Nonnull final CassandraConnectionData cassandraConnectionData) throws NoSuchAlgorithmException {
         final CassandraJourney cassandraJourney = new CassandraJourney(this.applicationName,
                 cassandraSessionProvider.getSessionForSchemaCreation(cassandraConnectionData));
         cassandraJourney.init();

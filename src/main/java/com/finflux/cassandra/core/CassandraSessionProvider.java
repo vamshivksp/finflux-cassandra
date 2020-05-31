@@ -1,6 +1,7 @@
 
 package com.finflux.cassandra.core;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,7 +26,7 @@ public class CassandraSessionProvider {
     }
 
     @Nonnull
-    public CqlSession getSession(@Nonnull final CassandraConnectionData cassandraConnectionData) {
+    public CqlSession getSession(@Nonnull final CassandraConnectionData cassandraConnectionData) throws NoSuchAlgorithmException {
         Assert.notNull(cassandraConnectionData, "At least one contact point must be given.");
         try {
             CqlSession session = getTenantSession(cassandraConnectionData.getSessionIdentifier());
@@ -41,7 +42,7 @@ public class CassandraSessionProvider {
     }
     
     @Nonnull
-    public CqlSession getSessionForSchemaCreation(@Nonnull final CassandraConnectionData cassandraConnectionData) {
+    public CqlSession getSessionForSchemaCreation(@Nonnull final CassandraConnectionData cassandraConnectionData) throws NoSuchAlgorithmException {
         Assert.notNull(cassandraConnectionData, "At least one contact point must be given.");
             final CqlSession session = this.sessionBuilder.buildSession(cassandraConnectionData);
             return session;
