@@ -1,5 +1,6 @@
 package com.finflux.cassandra.core;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
 import javax.annotation.Nonnull;
@@ -14,12 +15,10 @@ import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspaceStart;
 import com.datastax.oss.driver.internal.core.auth.PlainTextAuthProvider;
-import com.finflux.cassandra.codec.LocalDateTimeCodec;
-import com.finflux.cassandra.util.ContactPointUtils;
 
 public interface CassandraSessionBuilder {
-
-    default DriverConfigLoader buildDriverConfigLoader(final CassandraConnectionData cassandraConnectionData) {
+    
+    default ProgrammaticDriverConfigLoaderBuilder getDriverConfigLoader(final CassandraConnectionData cassandraConnectionData) {
         final ProgrammaticDriverConfigLoaderBuilder driverConfigLoaderBuilder = DriverConfigLoader.programmaticBuilder();
         driverConfigLoaderBuilder.withClass(DefaultDriverOption.AUTH_PROVIDER_CLASS, PlainTextAuthProvider.class);
         driverConfigLoaderBuilder.withString(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, cassandraConnectionData.getUserName());
@@ -40,27 +39,23 @@ public interface CassandraSessionBuilder {
                 Duration.ofSeconds(cassandraConnectionData.getRequestTimeOut()));
         driverConfigLoaderBuilder.withDuration(DefaultDriverOption.REPREPARE_TIMEOUT,
                 Duration.ofSeconds(cassandraConnectionData.getRequestTimeOut()));
-        final DriverConfigLoader driverConfigLoader = driverConfigLoaderBuilder.build();
-        return driverConfigLoader;
+        return driverConfigLoaderBuilder;
     }
 
-    default CqlSession buildSession(final CassandraConnectionData cassandraConnectionData) {
+    default CqlSession buildSession(final CassandraConnectionData cassandraConnectionData) throws NoSuchAlgorithmException {
         final CqlSessionBuilder builder = getSessionBuilder(cassandraConnectionData);
         builder.withKeyspace(CqlIdentifier.fromInternal(cassandraConnectionData.getKeySpaceIdentifier()));
         return builder.build();
     }
 
-    default CqlSessionBuilder getSessionBuilder(final CassandraConnectionData cassandraConnectionData) {
-        final DriverConfigLoader driverConfigLoader = buildDriverConfigLoader(cassandraConnectionData);
-        final CqlSessionBuilder builder = CqlSession.builder();
-        ContactPointUtils.process(builder, cassandraConnectionData.getContactPoints());
-        builder.withConfigLoader(driverConfigLoader);
-        builder.withLocalDatacenter(cassandraConnectionData.getDataCenterName());
-        builder.addTypeCodecs(new LocalDateTimeCodec());
-        return builder;
+    default CqlSessionBuilder getSessionBuilder(final CassandraConnectionData cassandraConnectionData) throws NoSuchAlgorithmException {
+        final ProgrammaticDriverConfigLoaderBuilder driverConfigLoaderBuilder = getDriverConfigLoader(cassandraConnectionData);
+        final CassandraProvider cassandraProvider = CassandraProvider.getProvider(cassandraConnectionData.getProvider());
+        return cassandraProvider.getSessionBuilder(cassandraConnectionData, driverConfigLoaderBuilder);
     }
 
-    default CqlSession buildSessionWithoutKeySpace(@Nonnull final CassandraConnectionData cassandraConnectionData) {
+    default CqlSession buildSessionWithoutKeySpace(@Nonnull final CassandraConnectionData cassandraConnectionData)
+            throws NoSuchAlgorithmException {
         final CqlSessionBuilder builder = getSessionBuilder(cassandraConnectionData);
         return builder.build();
     }
@@ -73,6 +68,6 @@ public interface CassandraSessionBuilder {
         session.execute(createKeyspace.build());
     }
 
-    public CqlSession createSession(CassandraConnectionData cassandraConnectionData);
-
+    public CqlSession createSession(CassandraConnectionData cassandraConnectionData)  throws NoSuchAlgorithmException;
+    
 }

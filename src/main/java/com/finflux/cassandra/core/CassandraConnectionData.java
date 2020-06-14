@@ -34,5 +34,7 @@ public class CassandraConnectionData {
     private Integer remotePoolSize = 1;
     @Default
     private Integer requestTimeOut = 2;
+    @Default
+    private String provider = "STANDALONE";
 
 }

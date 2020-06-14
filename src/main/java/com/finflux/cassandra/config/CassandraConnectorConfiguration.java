@@ -18,6 +18,7 @@
  */
 package com.finflux.cassandra.config;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -41,7 +42,7 @@ public class CassandraConnectorConfiguration {
     }
 
     @Bean
-    public CassandraSessionProvider cassandraSessionProvider(final CassandraJourneyFactory cassandraJourneyFactory) {
+    public CassandraSessionProvider cassandraSessionProvider(final CassandraJourneyFactory cassandraJourneyFactory) throws NoSuchAlgorithmException {
         final CassandraSessionBuilderFactory factory = new CassandraSessionBuilderFactory();
         final CassandraSessionProvider cassandraSessionProvider = new CassandraSessionProvider(
                 factory.buildFactory(this.cassandraConfigDetails));
@@ -52,7 +53,7 @@ public class CassandraConnectorConfiguration {
             if (!cassandraJourneyRoutes.isEmpty()) {
                 final CassandraJourney cassandraJourney = cassandraJourneyFactory.create(cassandraSessionProvider, cassandraConnectionData);
                 for (final CassandraJourneyRoute cassandraJourneyRoute : cassandraJourneyRoutes) {
-                    cassandraJourney.start(cassandraJourneyRoute);
+                    cassandraJourney.start(cassandraJourneyRoute, cassandraConnectionData.getKeySpaceIdentifier());
                 }
                 cassandraJourney.cleanUp();
             }
