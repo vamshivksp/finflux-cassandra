@@ -52,7 +52,7 @@ public class CassandraConnectorConfiguration {
             if (!cassandraJourneyRoutes.isEmpty()) {
                 final CassandraJourney cassandraJourney = cassandraJourneyFactory.create(cassandraSessionProvider, cassandraConnectionData);
                 for (final CassandraJourneyRoute cassandraJourneyRoute : cassandraJourneyRoutes) {
-                    cassandraJourney.start(cassandraJourneyRoute);
+                    cassandraJourney.start(cassandraJourneyRoute, cassandraConnectionData.getKeySpaceIdentifier());
                 }
                 cassandraJourney.cleanUp();
             }

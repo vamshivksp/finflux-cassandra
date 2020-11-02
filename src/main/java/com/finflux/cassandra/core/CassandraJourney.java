@@ -53,9 +53,10 @@ public class CassandraJourney {
         this.schemaTableName = this.applicationName + "_cassandra_schema_table";
     }
 
-    public void start(final CassandraJourneyRoute cassandraJourneyRoute) {
+    public void start(final CassandraJourneyRoute cassandraJourneyRoute, final String keyspaceName) {
         // check for version
-        final Select query = selectFrom(this.schemaTableName).column("hash_value").whereColumn("version").isEqualTo(bindMarker());
+        final Select query = selectFrom(keyspaceName, this.schemaTableName).column("hash_value").whereColumn("version")
+                .isEqualTo(bindMarker());
         final PreparedStatement preparedSelect = this.session.prepare(query.build());
         final ResultSet resultSet = this.session.execute(preparedSelect.bind(cassandraJourneyRoute.getVersion()));
         final Row row = resultSet.one();
@@ -87,4 +88,5 @@ public class CassandraJourney {
         this.logger.info("Clean up Session");
         this.session.close();
     }
+    
 }

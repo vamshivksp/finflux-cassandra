@@ -28,7 +28,7 @@ public class CassandraSessionProvider {
     public CqlSession getSession(@Nonnull final CassandraConnectionData cassandraConnectionData) {
         Assert.notNull(cassandraConnectionData, "At least one contact point must be given.");
         try {
-            CqlSession session = getTenantSession(cassandraConnectionData.getSessionIdentifier());
+            final CqlSession session = getTenantSession(cassandraConnectionData.getSessionIdentifier());
             this.sessionBuilder.createKeySpace(cassandraConnectionData, session);
             return session;
         } catch (final KeyspaceNotFoundException e) {
@@ -39,12 +39,12 @@ public class CassandraSessionProvider {
             return session;
         }
     }
-    
+
     @Nonnull
     public CqlSession getSessionForSchemaCreation(@Nonnull final CassandraConnectionData cassandraConnectionData) {
         Assert.notNull(cassandraConnectionData, "At least one contact point must be given.");
-            final CqlSession session = this.sessionBuilder.buildSession(cassandraConnectionData);
-            return session;
+        final CqlSession session = this.sessionBuilder.buildSession(cassandraConnectionData);
+        return session;
     }
 
     @Nonnull

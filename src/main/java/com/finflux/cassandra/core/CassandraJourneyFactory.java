@@ -18,6 +18,7 @@
  */
 package com.finflux.cassandra.core;
 
+
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
