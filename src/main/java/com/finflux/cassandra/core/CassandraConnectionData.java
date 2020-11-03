@@ -1,5 +1,7 @@
 package com.finflux.cassandra.core;
 
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -34,5 +36,15 @@ public class CassandraConnectionData {
     private Integer remotePoolSize = 1;
     @Default
     private Integer requestTimeOut = 2;
+    @Default
+    private String provider = "STANDALONE";
+    
+    private String sslTruststorePath;
+    
+    private String sslTruststorePassword;
+
+    public boolean isSSLDetailsConfigured() {
+        return StringUtils.isNoneBlank(this.sslTruststorePath, this.sslTruststorePassword);
+    }
 
 }
