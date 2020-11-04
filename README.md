@@ -3,7 +3,10 @@
 This project provides helps for using Cassandra in services.
 
 ## Build command
-./gradlew clean build publishToMavenLocal
+  - Publish to local maven repository
+   ./gradlew clean build publishToMavenLocal
+  - Publish to s3 maven repository
+   ./gradlew clean build publish
 
 ## Prerequisites
 ### Runtime
